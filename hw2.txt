@@ -1,0 +1,72 @@
+HTTP
+1. www.vine.com
+   aws.amazon.com
+   www.bookworm.com
+2.  bing -- chicago metro
+	baidu -- Dong xian shu shu chamber Lan
+	amazon -- adventures in stochastic processes
+FTP
+1. username = shiningmoon
+   password = public
+2. In active FTP, the client connects to the server's command port (usually port 21) from an unprivileged port.  The client
+	then listens on the next port, the original port + 1.  It issues a PORT command to the server and it waits for the 
+	server to connect to this port from its data port (usually port 20).  This can be a problem because firewalls usually 
+	don't allow an outside system to create a connection like this and might block this.
+   In passive FTP, the client initiates both the connection to the command port and the connection to the data port.  The
+	command port connection is made the same was as in active FTP, but instead of issuing a PORT command the client issues
+	a PASV command.  The server then tells the client which unprivileged port it should make a connection with and the 
+	client does this.
+3.  There are no PORT requests from the client and therefore not active FTP connections.
+4.  All of the requests are PASV and therefore passive FTP connections.
+5.  dragon.zip
+	ARP.java
+	L2Switch.java
+	phase1.html
+TRACEROUTE
+1. 192.168.0.100
+2. 74.125.225.46
+3. 192.168.0.1 (Interface)
+   10.131.180.1
+   96.34.20.20
+   96.34.17.95
+   96.34.16.112
+   96.34.16.77
+   96.34.2.4
+   96.34.0.7
+   96.34.0.9
+   96.34.3.9
+   96.34.152.30
+   209.85.254.120
+   209.85.250.28
+   74.125.225.46
+4. ?
+POP
+1.  username = cs155@dummymail.com
+	password = whitehat
+2.  5 messages
+3.	From: joe <cs155@dummymail.com>
+	To: cs155@dummymail.com
+	Subject: foobar
+	Date: Fri, 23 Apr 2010 08:20:52
+	
+	From: joe <cs155@dummymail.com>
+	To: cs155@dummymail.com
+	Subject: can you see this subject?
+	Date: Fri, 23 Apr 2010 08:23:25
+	
+	From: hariny <hariny@stanford.edu>
+	To: cs155@dummymail.com
+	Subject: test message
+	Date: Fri, 23 Apr 2010 10:25:00
+	
+	From: hariny <hariny@stanford.edu>
+	To: cs155@dummymail.com
+	Subject: geology rocks!
+	Date: Fri, 23 Apr 2010 08:22:29
+	
+	From: hariny <hariny@stanford.edu>
+	To: cs155@dummymail.com
+	Subject: wassup
+	Date: Fri, 23 Apr 2010 08:21:51
+	
+	
