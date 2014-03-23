@@ -70,3 +70,25 @@ POP
 	Date: Fri, 23 Apr 2010 08:21:51
 	
 	
+SYN DoS ATTACK	
+  pcap_next() may return NULL for a variety of reasons, according to the documentation.  This will happen if an error
+	occurs or if no packets are read from a live capture because they were discarded/filtered out/timed out.  There is no
+	way to tell the difference between these cases, and the program simply terminates when a NULL packet is found.  This
+	might work when reading from a save file but could cause problems when reading packets live.  An attacker would simply
+	have to send a packet that would cause a NULL return value and then the IDS program would terminate and their
+	subsequent SYN packets would not be logged.  To fix this program, the while loop should keep iterating even if the
+	packet pointer is NULL, and it should then check for this NULL case inside the loop and discard the packet if necessary.
+  Not all packets received will contain an IP header followed by a TCP header.  The IP header may be followed by another
+	type of header such as UDP or ICMP.  The IP header should be checked first to see what type of header follows it -- using
+	the ip_p data member of the struct -- and the second part of the condition that checks for the TCP SYN flag should only
+	be checked if ip_p == 0x06.  Otherwise the packet does not contain a TCP header at all and will not need to be logged.  If
+	not fixed, an attacker might first sent a non-TCP packet.  Then, when the IDS program tries to follow the pointer
+	tcpheader->th_flags it will refer to a junk address.  This could cause a segmentation fault and crash the program,
+	allowing the attacker to then continue sending SYN packets unlogged.
+  When the snprintf() starts copying the src and dst data into the reportBuf, it copies ip_len bytes, which is incorrect.
+	It should be copying 16 bytes according to the size of the reportBuf[] array.  Since snprintf() stops writing when it
+	encounters a NULL character though, this should still work.
+	
+	
+DNS SERVER
+1. 
