@@ -112,6 +112,19 @@ DNS SERVER
 	to the IP address of any website they want.  This will redirect all hosts using that DNS server to a different website
 	than they expect when they intend to visit the common site.  This could be exploited in a variety of ways, including
 	directing the hosts to the competitor's website or blocking the hosts' access to a website that is important for the 
-	business to use to run effectively.  This would be easiest for an attacker to do if the DNS server uses sequential query 
-	ID's instead of random query ID's.  
+	business to use to run effectively.  This would be easiest for an attacker to do if the DNS server used sequential query 
+	IDs instead of random query IDs.  It would also be easiest if the DNS server allowed recursive queries from outside the
+	business, so that the bad guy can send DNS queries that the server will then forward to other servers.
+   For the DNS cache poisoning to work, the attacker could send a DNS query for the website/hostname that they want to block.
+	If the DNS server allows recursive queries, it will then send the same request to another server higher up in the hierarchy.
+	While  the DNS server is requesting this information from other servers, the attacker floods the original DNS server with
+	forged replies that map the chosen hostname to the IP address of their webserver.  In order	for this answer to be accepted, 
+	the query ID (QID) of the reply has to match the QID of the request, and it has to arrive before the legitimate reply does.
+	If the QIDs are incremented in order, it is fairly easy for the attacker to quickly guess which QID they should use.  They
+	can see what QID the DNS server is using by getting a user to look up their hostname or making the request themselves. 
+	Since they are authoritative for that hostname, the request will eventually come to their server, and this will include the
+	QID.  Then they just need to flood the DNS server with forged replies, starting with this QID and incrementing from there.
+	If they can do this more quickly than the legitimate nameserver, then the DNS server will cache this false reply and ignore
+	the real one that it gets later.  Until the cache entry expires when the TTL reaches 0, all of the hosts using the DNS
+	server will be re-directed to the competitor's webserver when they attempt to reach the targeted hostname.  
 	 
