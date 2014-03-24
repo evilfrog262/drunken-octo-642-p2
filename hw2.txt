@@ -39,7 +39,9 @@ TRACEROUTE
    209.85.254.120
    209.85.250.28
    74.125.225.46
-4. ?
+4. Private IP
+   Charter Communications
+   Google Inc
 POP
 1.  username = cs155@dummymail.com
 	password = whitehat
@@ -82,13 +84,34 @@ SYN DoS ATTACK
 	type of header such as UDP or ICMP.  The IP header should be checked first to see what type of header follows it -- using
 	the ip_p data member of the struct -- and the second part of the condition that checks for the TCP SYN flag should only
 	be checked if ip_p == 0x06.  Otherwise the packet does not contain a TCP header at all and will not need to be logged.  If
-	not fixed, an attacker might first sent a non-TCP packet.  Then, when the IDS program tries to follow the pointer
+	not fixed, an attacker might first send a non-TCP packet.  Then, when the IDS program tries to follow the pointer
 	tcpheader->th_flags it will refer to a junk address.  This could cause a segmentation fault and crash the program,
 	allowing the attacker to then continue sending SYN packets unlogged.
   When the snprintf() starts copying the src and dst data into the reportBuf, it copies ip_len bytes, which is incorrect.
 	It should be copying 16 bytes according to the size of the reportBuf[] array.  Since snprintf() stops writing when it
 	encounters a NULL character though, this should still work.
+  The IP header could be modified by an attacker and the ip_hl data member could be set to an arbitrary value.  This could be
+	exploited in a variety of ways.  For example, the tcpheader pointer could point into the payload instead of the beginning
+	of the TCP header.  Then when the check for the SYN flag is performed, the program will not actually be looking for the flag
+	in the correct location and the check will be bypassed.  This way all of the SYN flood packets will go unlogged.  This 
+	could be avoided if the program validtaed the ip_hl to make sure it is a reasonable value.  
+  Since the payload is also based off of the ip_hl value that the attacker can control, the payload pointer could be set to 
+	point to an arbitrary offset in memory.  This could be exploited to make the program crash and stop logging packets due to
+	a segmentation fault, for example.  This could be fixed in the same was as the above problem -- by verifying that the ip_len
+	data member is reasonable.  The tcp length in the th_off data member should also be validated, because it could be 
+	exploited in the same way.
+  An integer overflow error could occur in logpacket() when declaring the reportBuf array.  The user can set the ip_len value
+	to be anything they want.  If they set it to be a large enough value, then when 16 is added it could overflow and become
+	a negative integer.  Assigning a negative length to an array is undefined behavior in C and, when filling in the array,
+	would cause a crash.  This would again allow the attacker to send their packets without being logged.  Input validation
+	is the solution again here.
 	
 	
 DNS SERVER
-1. 
+1. DNS poisoning could be used by a corporate competitor to change the DNS cache record for a commonly requested url to point
+	to the IP address of any website they want.  This will redirect all hosts using that DNS server to a different website
+	than they expect when they intend to visit the common site.  This could be exploited in a variety of ways, including
+	directing the hosts to the competitor's website or blocking the hosts' access to a website that is important for the 
+	business to use to run effectively.  This would be easiest for an attacker to do if the DNS server uses sequential query 
+	ID's instead of random query ID's.  
+	 
